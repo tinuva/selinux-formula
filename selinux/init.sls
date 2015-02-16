@@ -7,7 +7,9 @@ selinux:
   pkg.installed:
     - pkgs:
       - policycoreutils-python
+{%- if grains['osmajorrelease'][0] == '7' %}
       - policycoreutils-devel
+{%- endif %}
 
 /etc/selinux/src:
   file.directory:
@@ -33,7 +35,7 @@ policy_{{ k }}:
     - group: root
     - mode: 600
     - contents_pillar: selinux:modules:{{ v_name }}:plain
-    
+
 
 checkmodule_{{ k }}:
   cmd:
@@ -45,7 +47,7 @@ checkmodule_{{ k }}:
       - file: /etc/selinux/src/{{ v_name }}.te
       - pkg: selinux
     - unless: if [ "$(semodule -l | awk '{ print $1 }' | grep {{ v_name }} )" == "{{ v_name }}" ]; then /bin/true; else /bin/false; fi
-      
+
 create_package_{{ k }}:
   cmd:
     - wait
@@ -65,7 +67,7 @@ install_semodule_{{ k }}:
     - require:
       - file: /etc/selinux/src/{{ v_name }}.te
     - unless: if [ "$(semodule -l | awk '{ print $1 }' | grep {{ v_name }} )" == "{{ v_name }}" ]; then /bin/true; else /bin/false; fi
-      
+
 {% endfor %}
 
 selinux-config:
