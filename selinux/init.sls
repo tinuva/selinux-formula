@@ -16,6 +16,34 @@ selinux:
     - user: root
     - group: root
 
+{% for application, config in salt['pillar.get']('selinux:ports', {}).items() %}
+{% for protocol, ports in config.items() %}
+{% for port in ports %}
+selinux_{{ application }}_{{ protocol }}_port_{{ port }}:
+  cmd:
+    - run
+    - name: semanage port -a -t {{ application }}_port_t -p {{ protocol }} {{ port }}
+    - require:
+      - pkg: selinux
+    - unless: FOUND="no"; for i in $(semanage port -l | grep {{ application }}_port_t | tr -s ' ' | cut -d ' ' -f 3- | tr -d ','); do if [ "$i" == "{{ port }}" ]; then FOUND="yes"; fi; done; if [ "$FOUND" == "yes" ]; then /bin/true; else /bin/false; fi
+{% endfor %}
+{% endfor %}
+{% endfor %}
+
+{% for application, config in salt['pillar.get']('selinux:ports.absent', {}).items() %}
+{% for protocol, ports in config.items() %}
+{% for port in ports %}
+selinux_{{ application }}_{{ protocol }}_port_{{ port }}_absent:
+  cmd:
+    - run
+    - name: semanage port -d -t {{ application }}_port_t -p {{ protocol }} {{ port }}
+    - require:
+      - pkg: selinux
+    - unless: FOUND="no"; for i in $(semanage port -l | grep {{ application }}_port_t | tr -s ' ' | cut -d ' ' -f 3- | tr -d ','); do if [ "$i" == "{{ port }}" ]; then FOUND="yes"; fi; done; if [ "$FOUND" == "yes" ]; then /bin/false; else /bin/true; fi
+{% endfor %}
+{% endfor %}
+{% endfor %}
+
 {% for k, v in salt['pillar.get']('selinux:modules', {}).items() %}
   {% set v_name = v.name|default(k) %}
 
