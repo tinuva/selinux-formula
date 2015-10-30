@@ -16,6 +16,22 @@ selinux:
     - user: root
     - group: root
 
+{% for bool in salt['pillar.get']('selinux:booleans.enabled', {}) %}
+selinux_boolean_{{ bool }}_enabled:
+  selinux.boolean:
+    - name: {{ bool }}
+    - value: 'on'
+    - persist: True
+{% endfor %}
+
+{% for bool in salt['pillar.get']('selinux:booleans.disabled', {}) %}
+selinux_boolean_{{ bool }}_disabled:
+  selinux.boolean:
+    - name: {{ bool }}
+    - value: 'off'
+    - persist: True
+{% endfor %}
+
 {% for application, config in salt['pillar.get']('selinux:ports', {}).items() %}
 {% for protocol, ports in config.items() %}
 {% for port in ports %}
