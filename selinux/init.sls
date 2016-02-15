@@ -67,6 +67,7 @@ selinux_fcontext_{{ file }}_absent:
     - name: semanage fcontext -d "{{ file }}"
     - require:
       - pkg: selinux
+    - unless: if (semanage fcontext --list | grep -q "^{{ file }} "); then /bin/false; else /bin/true; fi
 {% endfor %}
 
 {% for k, v in salt['pillar.get']('selinux:modules', {}).items() %}
