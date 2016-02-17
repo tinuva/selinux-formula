@@ -10,11 +10,11 @@ selinux:
       tcp:
         - 2223
   fcontext:
-    /var/www/test.org/statics:
+    /var/www/test.org/statics(/.*)?:
       user: system_u
       type: httpd_sys_rw_content_t
   fcontext.absent:
-    - /var/www/test.org/src
+    - /var/www/test.org/src(/.*)?
     - /var/www/test.org/tests
   modules:
     gitlabsshkeygen:
