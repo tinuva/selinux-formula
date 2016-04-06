@@ -1,6 +1,10 @@
 selinux:
   state: enforcing
   type: targeted
+  booleans.enabled:
+    - httpd_can_network_connect_db
+  booleans.disabled:
+    - httpd_can_network_connect
   ports:
     ssh:
       tcp:
