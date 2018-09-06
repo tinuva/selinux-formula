@@ -1,4 +1,4 @@
-{{pillar['headers']['salt']['file']}}
+# This file is managed by salt, do not edit
 {% set selinux  = pillar.get('selinux', {}) -%}
 # This file controls the state of SELinux on the system.
 # SELINUX= can take one of these three values:
