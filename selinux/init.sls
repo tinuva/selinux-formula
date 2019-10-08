@@ -38,10 +38,10 @@ selinux_boolean_{{ bool }}_disabled:
 selinux_{{ application }}_{{ protocol }}_port_{{ port }}:
   cmd:
     - run
-    - name: semanage port -a -t {{ application }}_port_t -p {{ protocol }} {{ port }}
+    - name: /usr/sbin/semanage port -a -t {{ application }}_port_t -p {{ protocol }} {{ port }}
     - require:
       - pkg: selinux
-    - unless: FOUND="no"; for i in $(semanage port -l | grep {{ application }}_port_t | tr -s ' ' | cut -d ' ' -f 3- | tr -d ','); do if [ "$i" == "{{ port }}" ]; then FOUND="yes"; fi; done; if [ "$FOUND" == "yes" ]; then /bin/true; else /bin/false; fi
+    - unless: FOUND="no"; for i in $(/usr/sbin/semanage port -l | grep {{ application }}_port_t | tr -s ' ' | cut -d ' ' -f 3- | tr -d ','); do if [ "$i" == "{{ port }}" ]; then FOUND="yes"; fi; done; if [ "$FOUND" == "yes" ]; then /bin/true; else /bin/false; fi
 {% endfor %}
 {% endfor %}
 {% endfor %}
@@ -52,10 +52,10 @@ selinux_{{ application }}_{{ protocol }}_port_{{ port }}:
 selinux_{{ application }}_{{ protocol }}_port_{{ port }}_absent:
   cmd:
     - run
-    - name: semanage port -d -t {{ application }}_port_t -p {{ protocol }} {{ port }}
+    - name: /usr/sbin/semanage port -d -t {{ application }}_port_t -p {{ protocol }} {{ port }}
     - require:
       - pkg: selinux
-    - unless: FOUND="no"; for i in $(semanage port -l | grep {{ application }}_port_t | tr -s ' ' | cut -d ' ' -f 3- | tr -d ','); do if [ "$i" == "{{ port }}" ]; then FOUND="yes"; fi; done; if [ "$FOUND" == "yes" ]; then /bin/false; else /bin/true; fi
+    - unless: FOUND="no"; for i in $(/usr/sbin/semanage port -l | grep {{ application }}_port_t | tr -s ' ' | cut -d ' ' -f 3- | tr -d ','); do if [ "$i" == "{{ port }}" ]; then FOUND="yes"; fi; done; if [ "$FOUND" == "yes" ]; then /bin/false; else /bin/true; fi
 {% endfor %}
 {% endfor %}
 {% endfor %}
@@ -71,7 +71,7 @@ selinux_{{ application }}_{{ protocol }}_port_{{ port }}_absent:
 selinux_fcontext_{{ file }}:
   cmd:
     - run
-    - name: semanage fcontext -a {{ ' '.join(parameters) }} "{{ file }}"
+    - name: /usr/sbin/semanage fcontext -a {{ ' '.join(parameters) }} "{{ file }}"
     - require:
       - pkg: selinux
 {% endfor %}
@@ -80,10 +80,10 @@ selinux_fcontext_{{ file }}:
 selinux_fcontext_{{ file }}_absent:
   cmd:
     - run
-    - name: semanage fcontext -d "{{ file }}"
+    - name: /usr/sbin/semanage fcontext -d "{{ file }}"
     - require:
       - pkg: selinux
-    - unless: if (semanage fcontext --list | grep -q "^{{ file }} "); then /bin/false; else /bin/true; fi
+    - unless: if (/usr/sbin/semanage fcontext --list | grep -q "^{{ file }} "); then /bin/false; else /bin/true; fi
 {% endfor %}
 
 {% for k, v in salt['pillar.get']('selinux:modules', {}).items() %}

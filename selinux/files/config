@@ -1,4 +1,5 @@
 # This file is managed by salt, do not edit
+{{pillar.get('headers', {}).get('salt',{}).get('file', '# This file is managed by salt, do not edit')}}
 {% set selinux  = pillar.get('selinux', {}) -%}
 # This file controls the state of SELinux on the system.
 # SELINUX= can take one of these three values:
@@ -8,6 +9,6 @@
 SELINUX={{ selinux.state|default('enforcing') }}
 # SELINUXTYPE= can take one of these two values:
 #     targeted - Targeted processes are protected,
-#     minimum - Modification of targeted policy. Only selected processes are protected. 
+#     minimum - Modification of targeted policy. Only selected processes are protected.
 #     mls - Multi Level Security protection.
 SELINUXTYPE={{ selinux.type|default('targeted ') }}
