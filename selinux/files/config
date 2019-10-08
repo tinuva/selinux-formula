@@ -1,3 +1,4 @@
+# This file is managed by salt, do not edit
 {{pillar.get('headers', {}).get('salt',{}).get('file', '# This file is managed by salt, do not edit')}}
 {% set selinux  = pillar.get('selinux', {}) -%}
 # This file controls the state of SELinux on the system.
