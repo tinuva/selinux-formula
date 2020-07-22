@@ -71,7 +71,8 @@ selinux_{{ application }}_{{ protocol }}_port_{{ port }}_absent:
 selinux_fcontext_{{ file }}:
   cmd:
     - run
-    - name: /usr/sbin/semanage fcontext -a {{ ' '.join(parameters) }} "{{ file }}"
+    - name: if (/usr/sbin/semanage fcontext --list | grep "^{{ file }}"); then /usr/sbin/semanage fcontext -m {{ ' '.join(parameters) }} "{{ file }}"; else /usr/sbin/semanage fcontext -a {{ ' '.join(parameters) }} "{{ file }}" ; fi
+    - unless: (/usr/sbin/semanage fcontext --list | grep "^{{ file }}"|grep -E "{{ config.user }}:(.*)?{{ config.type }}")
     - require:
       - pkg: selinux
 {% endfor %}
