@@ -6,7 +6,11 @@
 selinux:
   pkg.installed:
     - pkgs:
+{% if ( grains['saltversion'] >= '2017.7.0' and grains['osmajorrelease'] <= 7 ) or ( grains['saltversion'] < '2017.7.0' and grains['osmajorrelease'][0]|int <= 7 ) %}
       - policycoreutils-python
+{% else %}
+      - policycoreutils-python-utils
+{% endif %}
 {% if ( grains['saltversion'] >= '2017.7.0' and grains['osmajorrelease'] == 7 ) or ( grains['saltversion'] < '2017.7.0' and grains['osmajorrelease'][0] == '7' ) %}
       - policycoreutils-devel
 {%- endif %}
